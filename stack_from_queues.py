@@ -25,20 +25,26 @@ class StackFromQueues:
         """
         Empty and returns True iff both queues are empty.
         """
-        pass
+        return self.q1.is_empty() and self.q2.is_empty()
 
     def push(self, value: int) -> None:
         """
         Enqueue into whichever queue is currently non-empty.
         """
-        pass
+        if not self.q1.is_empty():
+            self.q1.enqueue(value)
+        else:
+            self.q2.enqueue(value)
 
     def _active_and_passive(self):
         """
         Helper: return (start, final) 
         'start' is the currently non-empty queue; 'final' is the empty queue.
         """
-        pass
+        if not self.q1.is_empty():
+            return self.q1, self.q2
+        else:
+            return self.q2, self.q1
 
     def top(self) -> int:
         """
@@ -47,7 +53,14 @@ class StackFromQueues:
         Raises:
             AssertionError if the stack is empty.
         """
-        pass
+        assert not self.is_empty(), "top() called on empty stack"
+        active, passive = self._active_and_passive()
+        while True:
+            value = active.dequeue()
+            if active.is_empty():
+                passive.enqueue(value)
+                return value
+            passive.enqueue(value)
 
     def pop(self) -> int:
         """
@@ -56,12 +69,20 @@ class StackFromQueues:
         Raises:
             AssertionError if the stack is empty.
         """
-        pass
+        assert not self.is_empty(), "pop() called on empty stack"
+        active, passive = self._active_and_passive()
+        while True:
+            value = active.dequeue()
+            if active.is_empty():
+                return value
+            passive.enqueue(value)
+
 
     def clear(self) -> None:
         """
         Python's GC handles memory; we call clear() to break links and empty both queues.
         """
-        pass
+        self.q1.clear()
+        self.q2.clear()
 
     
